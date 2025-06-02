@@ -1,18 +1,17 @@
 package org.example.structure;
 
 public enum ColumnTypes {
-    /*
-    Types supported by columns
-     */
     STRING(String.class),
     INTEGER(Integer.class),
-    LONG(Long.class),
     DOUBLE(Double.class),
     BOOLEAN(Boolean.class);
-    private Class<?> privateType;
-    ColumnTypes(Class<?> type) {
-        privateType = type;
+
+    private final Class<?> privateType;
+
+    ColumnTypes(Class<?> privateType) {
+        this.privateType = privateType;
     }
+
     public Class<?> getPrivateType() {
         return privateType;
     }
