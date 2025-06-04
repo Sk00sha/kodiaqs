@@ -4,13 +4,13 @@ import org.example.dataframe.exceptions.TypeValidationException;
 import org.example.dataframe.transformations.ColumnCondition;
 import org.example.dataframe.transformations.GroupByMethod;
 import org.example.dataframe.transformations.TransformationMethods;
-import org.example.structure.ColumnTypes;
+import org.example.dataframe.structure.ColumnTypes;
+import org.example.dataframe.structure.Schema;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Predicate;
 
 public class DataFrame implements TransformationMethods {
@@ -74,20 +74,20 @@ public class DataFrame implements TransformationMethods {
     }
 
     @Override
-    public DataFrame filter(Column col, Predicate<Integer> predicate) {
+    public DataFrame filter(Column col, Predicate<Object> predicate) {
         List<?> rawValues = col.getValues();
-        List<Integer> indexesToKeep = new ArrayList<>();
+        List<Integer> indicesToKeep = new ArrayList<>();
         for (int i = 0; i < rawValues.size(); i++) {
             Object value = rawValues.get(i);
-            if (value instanceof Integer && predicate.test((Integer) value)) {
-                indexesToKeep.add(i);
+            if (predicate.test(value)) {
+                indicesToKeep.add(i);
             }
         }
         for (Column column : df) {
             List<?> originalValues = column.getValues();
-            List<Object> filteredValues = new ArrayList<>(indexesToKeep.size());
+            List<Object> filteredValues = new ArrayList<>(indicesToKeep.size());
 
-            for (int index : indexesToKeep) {
+            for (int index : indicesToKeep) {
                 filteredValues.add(originalValues.get(index));
             }
 
@@ -99,15 +99,25 @@ public class DataFrame implements TransformationMethods {
 
     @Override
     public DataFrame groupBy(Column colum, GroupByMethod method) {
+        Map<String,Integer> produce = new HashMap<>();
         switch (method){
-            case AVG -> {
-                Map<String,Integer> produce = new HashMap<>();
-                AtomicInteger sum = new AtomicInteger();
-                colum.getValues().forEach(item-> sum.addAndGet((Integer) item));
-                colum.getValues().size();
+            case COUNT -> {
+                for (Object o: colum.getValues()){
+                    String s = (String) o;
+                    if (!produce.containsKey(s)){
+                        produce.put(s,1);
+                    }
+                    else{
+                        produce.put(s,produce.get(s)+1);
+                    }
+                }
             }
         }
-        return null;
+        columnRegistry.clear();
+        columnRegistry.put(colum.getColumnName(),0);
+        columnRegistry.put("Count",1);
+        this.df = List.of(new Column(ColumnTypes.STRING,colum.getColumnName(),List.of(produce.keySet())),new Column(ColumnTypes.INTEGER,"Count",List.of(produce.values())));
+        return this;
     }
 
 

@@ -1,4 +1,4 @@
-package org.example.structure;
+package org.example.dataframe.structure;
 
 public enum ColumnTypes {
     STRING(String.class),

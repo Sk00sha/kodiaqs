@@ -1,7 +1,6 @@
-package org.example.dataframe;
+package org.example.dataframe.structure;
 
 import org.example.dataframe.exceptions.DuplicateColumnException;
-import org.example.structure.ColumnTypes;
 
 import java.util.LinkedHashMap;
 import java.util.Map;

@@ -1,9 +1,7 @@
 package org.example.dataframe;
 
-import org.example.dataframe.exceptions.TypeValidationException;
-import org.example.structure.ColumnTypes;
+import org.example.dataframe.structure.ColumnTypes;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class Column {

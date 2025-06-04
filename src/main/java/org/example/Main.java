@@ -1,15 +1,12 @@
 package org.example;
 
-import org.example.dataframe.Column;
 import org.example.dataframe.DataFrame;
-import org.example.dataframe.Schema;
-import org.example.readers.Reader;
-import org.example.runner.Environment;
-import org.example.structure.ColumnTypes;
+import org.example.dataframe.structure.Schema;
+import org.example.dataframe.transformations.FilterFunction;
+import org.example.dataframe.structure.ColumnTypes;
+import org.example.dataframe.transformations.GroupByMethod;
 
 import java.util.List;
-import java.util.Map;
-import java.util.function.Predicate;
 
 public class Main {
     public static void main(String[] args) {
@@ -20,12 +17,12 @@ public class Main {
 
         var df = new DataFrame(
                 schema,
-                List.of("Maggie", "Jenny","Mark"),
+                List.of("Maggie", "Maggie","Mark"),
                 List.of(55, 32,19),
                 List.of(true,true,true)
         );
-        DataFrame df2 = df.filter(df.getColumn("age"),column -> column>20);
+
+        var df2 = df.groupBy(df.getColumn("names"), GroupByMethod.COUNT);
         df2.show();
-        df.describe();
     }
 }

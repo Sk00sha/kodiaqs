@@ -7,7 +7,7 @@ import java.util.Map;
 import java.util.function.Predicate;
 
 public interface TransformationMethods {
-    DataFrame filter(Column column, Predicate<Integer> predicate);
+    DataFrame filter(Column column, Predicate<Object> predicate);
 
     DataFrame groupBy(Column colum, GroupByMethod method);
 

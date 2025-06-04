@@ -2,9 +2,9 @@ package org.example.dataframe.service;
 
 import org.example.dataframe.Column;
 import org.example.dataframe.DataFrame;
-import org.example.dataframe.Schema;
+import org.example.dataframe.structure.Schema;
 import org.example.dataframe.exceptions.TypeValidationException;
-import org.example.structure.ColumnTypes;
+import org.example.dataframe.structure.ColumnTypes;
 
 import java.util.List;
 import java.util.Map;
@@ -22,10 +22,11 @@ public class DataFrameService {
             List<Object> values = columnValues[i];
 
             validateColumnValues(type, values);
-            df.add(new Column(type,colName, values));
-            columnRegistry.put(colName,i);
+            //df.add(new Column(type,colName, values));
+            //columnRegistry.put(colName,i);
             i++;
         }
+        return null;
     }
     private static void validateColumnValues(ColumnTypes type, List<Object> values){
         for (Object v:values){
