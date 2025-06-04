@@ -2,6 +2,7 @@ package org.example.dataframe;
 
 import org.example.dataframe.exceptions.TypeValidationException;
 import org.example.dataframe.transformations.ColumnCondition;
+import org.example.dataframe.transformations.GroupByMethod;
 import org.example.dataframe.transformations.TransformationMethods;
 import org.example.structure.ColumnTypes;
 
@@ -9,6 +10,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Predicate;
 
 public class DataFrame implements TransformationMethods {
@@ -67,35 +69,47 @@ public class DataFrame implements TransformationMethods {
         }
     }
 
-    @Override
-    public DataFrame filter(Predicate<Column> predicate) {
-        return null;
-    }
     public ColumnCondition where(String column) {
         return new ColumnCondition(column);
     }
 
     @Override
     public DataFrame filter(Column col, Predicate<Integer> predicate) {
-        var a = col.getValues();
-        List<Boolean> booleanMask = new ArrayList<>();
-        for (int i = 0; i < a.size(); i++) {
-                booleanMask.add(predicate.test((Integer) a.get(i)));
-        }
-        df.forEach(listItem -> {
-            List<?> originalValues = listItem.getValues();
-            List<Object> mutableCopy = new ArrayList<>(originalValues);
-
-            for (int j = booleanMask.size() - 1; j >= 0; j--) {
-                if (Boolean.FALSE.equals(booleanMask.get(j))) {
-                    mutableCopy.remove(j);
-                }
+        List<?> rawValues = col.getValues();
+        List<Integer> indexesToKeep = new ArrayList<>();
+        for (int i = 0; i < rawValues.size(); i++) {
+            Object value = rawValues.get(i);
+            if (value instanceof Integer && predicate.test((Integer) value)) {
+                indexesToKeep.add(i);
             }
-            listItem.setValues(mutableCopy); // assumes you have a setter
-        });
+        }
+        for (Column column : df) {
+            List<?> originalValues = column.getValues();
+            List<Object> filteredValues = new ArrayList<>(indexesToKeep.size());
+
+            for (int index : indexesToKeep) {
+                filteredValues.add(originalValues.get(index));
+            }
+
+            column.setValues(filteredValues); // assumes setter exists
+        }
 
         return this;
     }
+
+    @Override
+    public DataFrame groupBy(Column colum, GroupByMethod method) {
+        switch (method){
+            case AVG -> {
+                Map<String,Integer> produce = new HashMap<>();
+                AtomicInteger sum = new AtomicInteger();
+                colum.getValues().forEach(item-> sum.addAndGet((Integer) item));
+                colum.getValues().size();
+            }
+        }
+        return null;
+    }
+
 
     private DataFrame createDataFrame(Column c,List<Object> list){
         return new DataFrame(new Schema().addColumn("name",ColumnTypes.BOOLEAN),list);
